@@ -33,7 +33,17 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def init_session_state():
-    """Initialize session state variables"""
+    """
+    Initialize Streamlit session state variables required for the RAG system.
+
+    Ensures the following keys exist in session state:
+        - 'rag_system': Stores the initialized RAG system object.
+        - 'initialized': Boolean flag indicating if the system is initialized.
+        - 'history': List of previous search queries and results.
+
+    Returns:
+        None
+    """
     if 'rag_system' not in st.session_state:
         st.session_state.rag_system = None
     if 'initialized' not in st.session_state:
@@ -44,13 +54,25 @@ def init_session_state():
 # Cache the initialization to avoid re-running expensive setup steps on every Streamlit rerun.
 @st.cache_resource
 def initialize_rag():
-    """Initialize the RAG system (cached)"""
+    """
+    Initialize and cache the RAG (Retrieval-Augmented Generation) system.
+
+    Loads the LLM, processes documents from default URLs, creates a vector store,
+    and builds the retrieval graph. Caches the result to avoid repeated expensive
+    initialization on Streamlit reruns.
+
+    Returns:
+        tuple:
+            - graph_builder (GraphBuilder): The built graph builder object.
+            - num_chunks (int): Number of document chunks processed.
+        If initialization fails, returns (None, 0).
+    """
     try:
         # Initialize components
         llm = Config.get_llm()
         doc_processor = DocumentProcessor(
             chunk_size=Config.CHUNK_SIZE,
-            chunk_overlap=Config.CHUNK_OVERLAP
+            chunk_overlap=Config.CHUNK_OVERLAP,
         )
         vector_store = VectorStore()
         
@@ -76,8 +98,15 @@ def initialize_rag():
         return None, 0
 
 def main():
+    """
+    Main entry point for the Streamlit application.
 
-    """Main application"""
+    Handles UI rendering, system initialization, user input processing,
+    search execution, and display of results and search history.
+
+    Returns:
+        None
+    """
     init_session_state()
     
     # Title
