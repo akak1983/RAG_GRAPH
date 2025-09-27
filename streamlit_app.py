@@ -41,6 +41,7 @@ def init_session_state():
     if 'history' not in st.session_state:
         st.session_state.history = []
 
+# Cache the initialization to avoid re-running expensive setup steps on every Streamlit rerun.
 @st.cache_resource
 def initialize_rag():
     """Initialize the RAG system (cached)"""
